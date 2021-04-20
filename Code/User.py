@@ -57,6 +57,7 @@ class User:
     def PushUser(self):
         mydict = User.TurnDict(self)
         if not self.pwd :
+
             return "Plz Set Acc"
         elif self.__mycol.find_one({ "_id": self.id }):
             myquery = {"_id" : self.id}
@@ -80,3 +81,7 @@ class User:
     def Delete(self):
         User.mycol.delete_one({"_id": self.id})
         return "Deleted"
+
+
+if __name__ == '__main__':
+    PassSig = User('B1801').PushUser()
