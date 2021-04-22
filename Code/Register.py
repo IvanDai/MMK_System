@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QDesktopWidg
 import sys
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from  RegisterMatch import *
+from  Match import *
 from User import *
 
 class Regist(QDialog):
@@ -38,20 +38,25 @@ class Regist(QDialog):
 
         # 账号输入
         self.userEdit = QLineEdit()
+        self.userEdit.setAlignment(Qt.AlignCenter)
         # 密码输入
         self.passwardEdit = QLineEdit()
+        self.passwardEdit.setAlignment(Qt.AlignCenter)
         # 设置掩码
         self.passwardEdit.setEchoMode(QLineEdit.Password)
         # 密码确认
         self.confirmEdit = QLineEdit()
         self.confirmEdit.setEchoMode(QLineEdit.Password)
+        self.confirmEdit.setAlignment(Qt.AlignCenter)
         # 电话输入
         self.phoneEdit = QLineEdit()
         self.phoneEdit.setAlignment(Qt.AlignCenter)
         # 姓名输入
         self.nameEdit = QLineEdit()
+        self.nameEdit.setAlignment(Qt.AlignCenter)
         # 邮箱输入
         self.mailEdit = QLineEdit() 
+        self.mailEdit.setAlignment(Qt.AlignCenter)
         
         Btn = QPushButton('注册')
 
@@ -68,7 +73,7 @@ class Regist(QDialog):
         layout.addWidget(self.nameEdit,4,1,1,2)
         layout.addWidget(mailLab,5,0)
         layout.addWidget(self.mailEdit,5,1,1,2)
-        layout.addWidget(Btn,6,0,1,3)
+        layout.addWidget(Btn,6,1,1,1)
         # 链接信号槽 
         Btn.clicked.connect(self.clickBtn)
         
@@ -76,7 +81,6 @@ class Regist(QDialog):
 
     # 点击注册按钮
     def clickBtn(self):
-        print('clicking register btn...')
         user = self.userEdit.text() # 获取id文本
         passward = self.passwardEdit.text() # 获取密码文本
         confirm = self.confirmEdit.text() # 获取确认密码

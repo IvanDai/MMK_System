@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from Register import *
-from LoginMatch import * 
+from Match import * 
 from Student import *
 from PyQt5.QtWidgets import *
 from User import *
@@ -35,7 +35,7 @@ class Callback(QDialog):
         mailLab.setAlignment(Qt.AlignCenter)
 
         #找回密码显示标签
-        self.pwdLab = QLabel('HHHHH')
+        self.pwdLab = QLabel('密码都能忘？你个憨憨！')
         self.pwdLab.setAlignment(Qt.AlignCenter)
 
         # 找回按钮

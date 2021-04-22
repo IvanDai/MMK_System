@@ -1,11 +1,12 @@
-from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QDesktopWidget, QWidget, QPushButton, QLineEdit,QLabel,QDialog,QMessageBox
+from PyQt5.QtWidgets    import *
 import sys
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from Register import *
-from LoginMatch import * 
-from Student import *
-from Callback import *
+from PyQt5.QtGui        import *
+from PyQt5.QtCore       import *
+from Register           import *
+from Match              import * 
+from Student            import *
+from Callback           import *
+from Admin              import *
 
 class LoginUI(QWidget):
     def __init__(self):
@@ -22,10 +23,29 @@ class LoginUI(QWidget):
     def initUI(self):
         # 窗口大小
         self.resize(400,200)
-        self.setFixedSize(300, 150)
+        self.setFixedSize(280, 110)
 
         # 窗口标题
         self.setWindowTitle('系统登陆')
+
+        # 窗口半透明
+        self.setWindowOpacity(0.8) # 设置窗口透明度
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground) # 设置窗口背景透明
+
+        # TODO: 背景图
+        # self.setAutoFillBackground(True) #一定要加上
+        # palette=QPalette()
+        # palette.setBrush(QPalette.Background, QBrush(QPixmap('./image/LoginBackground.jpg')))
+        # self.setPalette(palette)
+        self.setStyleSheet('background') 
+        # 字体
+        font = QtGui.QFont() 
+        font.setFamily('微软雅黑')
+        font.setBold(True) 
+        
+        # 隐藏边框
+        # self.setWindowFlag(QtCore.Qt.FramelessWindowHint) # 隐藏边框
+
 
         # 窗口图标 
         iconpath = 'image/login.ico'
@@ -33,10 +53,16 @@ class LoginUI(QWidget):
         self.setWindowIcon(Icon)
 
         # 账号密码输入标签
-        userLab = QLabel('账号')
+        userLab = QLabel('账号:')
         userLab.setAlignment(Qt.AlignCenter)
-        passwardLab = QLabel('密码')
+        userLab.setStyleSheet('color:white')
+        userLab.setFont(font)
+
+        passwardLab = QLabel('密码:')
         passwardLab.setAlignment(Qt.AlignCenter)
+        passwardLab.setStyleSheet('color:white')
+        passwardLab.setFont(font)
+
         self.userEdit = QLineEdit()
         self.passwardEdit = QLineEdit()
         self.passwardEdit.setEchoMode(QLineEdit.Password)
@@ -50,11 +76,13 @@ class LoginUI(QWidget):
         # 找回
         CallbackBtn = QPushButton("找回密码",self)
 
-        # 注销
+        # TODO:注销
 
         layout = QGridLayout()
+
         layout.addWidget(userLab,0,0)
         layout.addWidget(self.userEdit,0,1,1,2)
+
         layout.addWidget(passwardLab,1,0)
         layout.addWidget(self.passwardEdit, 1, 1, 1, 2)
 
@@ -88,9 +116,16 @@ class LoginUI(QWidget):
                 user = User(username).PullUser()
                 userPassword = User(username).pwd
                 if password == userPassword and user:
-                    self.Student = Ui_Form(username)
-                    self.Student.show()
-                    self.close()
+                    if username[0] == 'B':
+                        # 如果以B开头则进入普通用户界面
+                        self.Student = Ui_Form(username)
+                        self.Student.show()
+                        self.close()
+                    else:
+                        # 如果以A开头则进入管理员界面
+                        self.Admin = Admin(username)
+                        self.Admin.show()
+                        self.close()
                 else:
                     QMessageBox.information(self, '密码错误', '密码错误，请重新输入') 
             else:
@@ -104,16 +139,10 @@ class LoginUI(QWidget):
         self.setVisible(True)
 
     def Callback_Pushed(self):
-        print('Calling back...')
         self.setVisible(False)
         ui = Callback()
         ui.exec()
         self.setVisible(True)
-
-    def show_manu(self):
-        mainUI = Manu()
-        mainUI.show()
-        
 
 
 if __name__ == '__main__':
