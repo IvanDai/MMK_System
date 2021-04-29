@@ -1,0 +1,7 @@
+/.vscode
+/.idea
+/__pycache__
+.DS_Store
+.AppleDouble
+.LSOverride
+.Config.json.swp
