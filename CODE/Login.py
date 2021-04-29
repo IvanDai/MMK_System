@@ -39,7 +39,7 @@ class LogIn(QWidget , login):
 
         self.label_notice.setText("")
 
-        if User.db_connect():                           # 数据库链接情况判断，确保数据库正常打开，不然会闪退
+        if User().db_connect():                           # 数据库链接情况判断，确保数据库正常打开，不然会闪退
             current_user = User(username)                 # 创建账户实例，检测是否存在账户
             if current_user.PullUser():
                 if password == current_user.pwd:
@@ -92,7 +92,7 @@ class SignUp(QWidget ,signup):
         self.label_notice1.setText("")
         self.label_notice2.setText("")
 
-        if User.db_connect():
+        if User().db_connect():
             if username and pwd and pwd_2:
                 acc = User(username)
                 # 用户已存在

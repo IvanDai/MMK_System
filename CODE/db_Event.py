@@ -16,6 +16,7 @@ class Event():
 
     def __init__(self):
         return
+
     def TurnDict(self):
         mydict ={ 
             "_id"       : self.id,

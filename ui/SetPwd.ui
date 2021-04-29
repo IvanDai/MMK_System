@@ -207,6 +207,9 @@
          <height>21</height>
         </size>
        </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
       </widget>
      </item>
      <item>

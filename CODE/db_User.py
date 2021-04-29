@@ -23,6 +23,8 @@ class User:
                  email = "",
                  admin = 0,
                  event = []):
+
+        from PyQt5.QtWidgets import QMessageBox
         # 实例化用户 id
         self.id    = stu_id    # 必须填写
         self.pwd   = pwd   
@@ -31,12 +33,13 @@ class User:
         self.email = email 
         self.admin = admin
         self.event = event
-        if self.db_connect:
-            User.PullUser(self)
-    def db_connect(): 
+        if self.db_connect():
+            self.PullUser(self)
+
+    def db_connect(self): 
         #connecting to a DB in mongoDB 
         try: 
-            User.__myclient.admin.command("ping") 
+            self.__myclient.admin.command("ping") 
             print("Connection Successful!") 
             return True 
         except: 

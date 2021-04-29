@@ -3,6 +3,10 @@ import os,sys
 import re
 
 
+from db_User import *
+from db_Event import *
+
+
 class ClassRoom:
     # 链接本地客户端
     __myclient = pymongo.MongoClient("mongodb://localhost:27017")

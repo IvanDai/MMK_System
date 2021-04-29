@@ -16,8 +16,6 @@ from SetTheme import *
 
 
 userapp,_   = loadUiType('../ui/MMKSystem.ui')
-checkme,_   = loadUiType('../ui/CheckMessage.ui') 
-checkpwd,_  = loadUiType('../ui/CheckPassword.ui')
 
 class UserApp(QMainWindow,userapp):
     quan_dict = {
@@ -45,8 +43,8 @@ class UserApp(QMainWindow,userapp):
     def Handle_Buttons(self):
         # 左下角按键链接
         # 个人信息修改
-        # self.pushButton_3.clicked.connect(self.Set_Info)
-        # self.pushButton_4.clicked.connect(self.Set_Info)
+        self.pushButton_3.clicked.connect(self.Set_Info)
+        self.pushButton_4.clicked.connect(self.Set_Info)
         # 修改主题
         self.pushButton_5.clicked.connect(self.Change_Theme) 
         self.pushButton.clicked.connect(self.Log_Out)
@@ -201,6 +199,10 @@ class UserApp(QMainWindow,userapp):
         return
 
     def Set_Info(self):
+        from SetInfo import SetInfoWindow
+        self.window = SetInfoWindow(self.acc,0)
+        self.close()
+        self.window.show()
         return
     
     def Load_Self_Event(self):
