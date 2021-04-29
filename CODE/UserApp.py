@@ -45,8 +45,8 @@ class UserApp(QMainWindow,userapp):
     def Handle_Buttons(self):
         # 左下角按键链接
         # 个人信息修改
-        # self.pushButton_3.clicked.connect(self.Check_Mes)
-        # self.pushButton_4.clicked.connect(self.Check_Mes)
+        # self.pushButton_3.clicked.connect(self.Set_Info)
+        # self.pushButton_4.clicked.connect(self.Set_Info)
         # 修改主题
         self.pushButton_5.clicked.connect(self.Change_Theme) 
         self.pushButton.clicked.connect(self.Log_Out)
@@ -68,7 +68,6 @@ class UserApp(QMainWindow,userapp):
         # 表格初始化
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) # 填满
         self.tableWidget.setAlternatingRowColors(True) # 隔行变色
-        # self.tableWidget.setPalette(QPalette(Qt.gray))
 
         # 查询键链接
         self.pushButton_2.clicked.connect(self.Check_Room)
@@ -201,7 +200,7 @@ class UserApp(QMainWindow,userapp):
         self.window.show()
         return
 
-    def Check_Mes(self):
+    def Set_Info(self):
         return
     
     def Load_Self_Event(self):
