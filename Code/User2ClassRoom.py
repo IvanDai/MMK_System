@@ -11,8 +11,6 @@ class User2ClassRoom:
     # 创建新的集合
     __mycol = __mydb["User2ClassRoom"]
 
-    # 判断是否输入id或是输入name，如果有输入则转译
-
     def __init__(self,
                  room_id    = "",
                  user_id    = "",
@@ -58,7 +56,7 @@ class User2ClassRoom:
 
     # 删除教室记录
     def Delete(self):
-        self.mycol.delete_one({"_id": self.id})
+        self.__mycol.delete_one({"_id": self._id})
         return "Deleted"
 
 if __name__ == '__main__':

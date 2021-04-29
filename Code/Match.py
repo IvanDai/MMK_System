@@ -31,3 +31,19 @@ def passwardMatch(passward):
         return True
     else:
         return False
+
+# 管理员添加系统
+def classRoomID_match(ID):
+    ID_pat = 'B[2-4]R[1-4]0[1-9][0-6]'
+    if re.match(ID_pat,ID):
+        return True
+    else :
+        return False
+
+def people_match(people):
+    a = [n for n in range(300)]
+    if int(people) in a:
+        return True
+    else :
+        print(1)
+        return False

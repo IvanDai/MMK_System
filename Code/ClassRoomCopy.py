@@ -31,6 +31,7 @@ class ClassRoom:
             return room_id,name
         else:
             return '',''
+
     def __init__(self,
                  room_id  = "",
                  seats    = "",
@@ -41,10 +42,9 @@ class ClassRoom:
                       '9:50~11:25',
                       '13:45~15:20',
                       '15:35~17:10',
-                      '18:30~21:00']
-        
-        
-        
+                      '18:30~21:00',
+                      '11:30~12:15',
+                      '21:00~21:45']
         if not(self.Id2Name(room_id)):
             self.WrongFlag = 1
         else:
@@ -53,7 +53,8 @@ class ClassRoom:
             self.during   = DuringList[int(self.id[-1])] if self.id else ''
             self.status    = status
             self.event    = event
-            ClassRoom.PullClassroom(self)
+            # ClassRoom.PullClassroom(self)
+
 
     def PullClassroom(self):
         result = self.__mycol.find_one({ "_id": self.id })
@@ -67,6 +68,7 @@ class ClassRoom:
         else:
             return False
 
+
     def TurnDict(self):
         mydict = {
             "_id"      : self.id ,
@@ -77,6 +79,7 @@ class ClassRoom:
             "event"    : self.event}
         return mydict
     
+
     # 有则更新，无则创建
     def PushClassroom(self):
         mydict = self.TurnDict()
@@ -88,13 +91,15 @@ class ClassRoom:
             self.__mycol.insert_one(mydict) # 上传新的document
             return "Acc_Created"
 
+
     def ShowAll(self):
         allCol = self.__mycol.find()
         return allCol
 
+
     # 删除教室记录
     def Delete(self):
-        self.mycol.delete_one({"_id": self.id})
+        self.__mycol.delete_one({"_id": self.id})
         return "Deleted"
 
 

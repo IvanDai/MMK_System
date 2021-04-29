@@ -4,17 +4,26 @@ import sys
 from PyQt5.QtCore       import *
 from PyQt5.QtGui        import *
 import time
-from ClassRoom          import *
+from ClassRoomCopy      import *
+from AddClassInfo       import *
+from DelClassInfo       import *
+from CorClassInfo       import *
+from ApprClassInfo      import *
+from ReturnBack         import *
+from logUI              import *
+import re
 
 QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-class Admin(QWidget):
+
+class AdminUI(QDialog):
     def __init__(self,username):
-        super(Admin, self).__init__()
+        super(AdminUI, self).__init__()
         self.username = username
         self.setWindowTitle('教室多媒体钥匙管理系统')
         self.setupUi(self)
         self.retranslateUi(self)
+        self.c = ClassRoom().ShowAll()
         self.additem()
         
         # 设置时钟动态显示
@@ -26,13 +35,14 @@ class Admin(QWidget):
     def setupUi(self, Form):
         Form.setObjectName("教室多媒体钥匙管理系统")
         Form.resize(850, 472)
-        Form.setFixedSize(850, 472)
+        Form.setFixedSize(855, 472)
 
 
         iconpath = 'image/login.ico'
         Icon = QIcon(iconpath)
         self.setWindowIcon(Icon)
-
+        
+        # 显示标签
         self.IdLab = QtWidgets.QLabel(Form)
         self.IdLab.setGeometry(QtCore.QRect(20, 120, 71, 21))
         self.IdLab.setObjectName("IdLab")
@@ -42,110 +52,73 @@ class Admin(QWidget):
         self.TitleLab = QtWidgets.QLabel(Form)
         self.TitleLab.setGeometry(QtCore.QRect(150, 20, 541, 41))
         self.TitleLab.setObjectName("TitleLab")
-        self.line = QtWidgets.QFrame(Form)
-        self.line.setGeometry(QtCore.QRect(20, 180, 291, 31))
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName("line")
-        self.ClassroomLab = QtWidgets.QLabel(Form)
-        self.ClassroomLab.setGeometry(QtCore.QRect(90, 180, 111, 61))
-        self.ClassroomLab.setObjectName("ClassroomLab")
-        self.ClassList = QtWidgets.QListWidget(Form)
-        self.ClassList.setGeometry(QtCore.QRect(70, 220, 171, 85))
-        self.ClassList.setObjectName("ClassList")
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.ClassList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.ClassList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.ClassList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.ClassList.addItem(item)
-        self.TimeclssifyLab = QtWidgets.QLabel(Form)
-        self.TimeclssifyLab.setGeometry(QtCore.QRect(90, 300, 101, 51))
-        self.TimeclssifyLab.setObjectName("TimeclssifyLab")
-        self.TimeList = QtWidgets.QListWidget(Form)
-        self.TimeList.setGeometry(QtCore.QRect(70, 340, 171, 101))
-        self.TimeList.setObjectName("TimeList")
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.TimeList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.TimeList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.TimeList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.TimeList.addItem(item)
-        item = QtWidgets.QListWidgetItem()
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        item.setFont(font)
-        self.TimeList.addItem(item)
 
+        # 日志按钮
+        self.log_btn = QPushButton(Form)
+        self.log_btn.setGeometry(QtCore.QRect(770, 40, 60, 30))
+        self.log_btn.setText('管理日志')
+        self.log_btn.clicked.connect(self.show_log)
+
+        # 添加按钮
         self.Add_btn = QPushButton(Form)
         self.Add_btn.setGeometry(QtCore.QRect(760, 110, 80, 30))
         self.Add_btn.setText('添加')
         self.Add_btn.clicked.connect(self.AddInfo)
 
+        # 删除按钮
         self.Del_btn = QPushButton(Form)        
         self.Del_btn.setGeometry(QtCore.QRect(760, 150, 80, 30))
         self.Del_btn.setText('删除')
         self.Del_btn.clicked.connect(self.DelInfo)
 
+        # 修改按钮
         self.Cor_btn = QPushButton(Form)
         self.Cor_btn.setGeometry(QtCore.QRect(760, 190, 80, 30))
         self.Cor_btn.setText('修改')
         self.Cor_btn.clicked.connect(self.CorInfo)
         
-        self.Find_btn = QPushButton(Form)
-        self.Find_btn.setGeometry(QtCore.QRect(760, 230, 80, 30))
-        self.Find_btn.setText('查找')
-        self.Find_btn.clicked.connect(self.FindInfo)
-
+        # 审批按钮
         self.Appr_btn = QPushButton(Form)
-        self.Appr_btn.setGeometry(QtCore.QRect(760, 270, 80, 30))
+        self.Appr_btn.setGeometry(QtCore.QRect(760, 230, 80, 30))
         self.Appr_btn.setText('审批')
         self.Appr_btn.clicked.connect(self.ApprInfo)
 
+        # 归还按钮
+        self.return_btn = QPushButton(Form)
+        self.return_btn.setGeometry(QtCore.QRect(760,270,80,30))
+        self.return_btn.setText('归还钥匙')
+        self.return_btn.clicked.connect(self.ReturnBack)
+
+        #刷新按钮
+        self.Refresh_btn = QPushButton(Form)
+        self.Refresh_btn.setGeometry(QtCore.QRect(760, 310, 80, 30))
+        self.Refresh_btn.setText('刷新')
+        self.Refresh_btn.clicked.connect(self.RefreshInfo)
+
+        #显示数据按钮
+        self.display_btn = QPushButton(Form)
+        self.display_btn.setGeometry(QtCore.QRect(760, 350, 80, 30))
+        self.display_btn.setText('全部数据')
+        self.display_btn.clicked.connect(self.display_data)
+        
+        # 退出程序按钮
+        self.quit_btn = QPushButton(Form)
+        self.quit_btn.setGeometry(QtCore.QRect(760,390,80,30))
+        self.quit_btn.setText('退出程序')
+        self.quit_btn.clicked.connect(self.quit_proc)
+
+
+
+        # 定义表控件
         self.InfoTable = QtWidgets.QTableWidget(Form)
         self.InfoTable.setSortingEnabled(True)
-        self.InfoTable.setGeometry(QtCore.QRect(320, 110, 418, 351))
-        # self.InfoTable.setGeometry(QtCore.QRect(500,110,500,480))
+        self.InfoTable.setGeometry(QtCore.QRect(210, 110, 548, 351))
         self.InfoTable.setObjectName("InfoTable")
-        self.InfoTable.setColumnCount(4)
+        self.InfoTable.setColumnCount(5)
         self.InfoTable.setRowCount(0)
+        self.InfoTable.setShowGrid(False)
+
+        # 添加表格
         item = QtWidgets.QTableWidgetItem()
         self.InfoTable.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -156,13 +129,20 @@ class Admin(QWidget):
         self.InfoTable.setHorizontalHeaderItem(3, item)
         item = QtWidgets.QTableWidgetItem()
         self.InfoTable.setHorizontalHeaderItem(4, item)
+
+        # 边框线
+        self.line = QtWidgets.QFrame(Form)
+        self.line.setGeometry(QtCore.QRect(20, 180, 185, 31))
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
         self.line_2 = QtWidgets.QFrame(Form)
-        self.line_2.setGeometry(QtCore.QRect(300, 110, 20, 351))
+        self.line_2.setGeometry(QtCore.QRect(195, 110, 20, 351))
         self.line_2.setFrameShape(QtWidgets.QFrame.VLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.line_3 = QtWidgets.QFrame(Form)
-        self.line_3.setGeometry(QtCore.QRect(17, 100, 291, 20))
+        self.line_3.setGeometry(QtCore.QRect(20, 100, 185, 20))
         self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_3.setObjectName("line_3")
@@ -172,22 +152,75 @@ class Admin(QWidget):
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_4.setObjectName("line_4")
         self.line_5 = QtWidgets.QFrame(Form)
-        self.line_5.setGeometry(QtCore.QRect(20, 450, 291, 20))
+        self.line_5.setGeometry(QtCore.QRect(20, 450, 185, 16))
         self.line_5.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_5.setObjectName("line_5")
+
+        # 时间动态显示
         self.TimeLab = QtWidgets.QLabel(Form)
         self.TimeLab.setGeometry(QtCore.QRect(310, 70, 251, 31))
         self.TimeLab.setObjectName("TimeLab")
+        # id 显示
         self.IdEdit = QtWidgets.QLabel(Form)
         self.IdEdit.setGeometry(QtCore.QRect(110, 120, 91, 20))
         self.IdEdit.setObjectName("IdEdit")
+        # 状态显示
         self.StatusEdit = QtWidgets.QLabel(Form)
         self.StatusEdit.setGeometry(QtCore.QRect(110, 160, 91, 20))
         self.StatusEdit.setObjectName("StatusEdit")
 
+        DuringList = ['8:00~9:35',
+                      '9:50~11:25',
+                      '13:45~15:20',
+                      '15:35~17:10',
+                      '18:30~21:00',
+                      '11:30~12:15',
+                      '21:00~21:45',]
+
+        # 左侧查找布局
+        # 教学楼选择
+        self.BuldingCombo = QComboBox(Form)
+        self.BuldingCombo.setGeometry(QtCore.QRect(21, 230, 80, 30))
+        self.BuldingCombo.addItems(['教2','教3','教4'])
+        # 楼层选择
+        self.FloorCombo = QComboBox(Form)
+        self.FloorCombo.setGeometry(QtCore.QRect(121, 230, 80, 30))
+        self.FloorCombo.addItems(['1楼','2楼','3楼','4楼'])
+        # 时段选择
+        self.TimeCombo = QComboBox(Form)
+        self.TimeCombo.setGeometry(QtCore.QRect(21, 280, 80, 30))
+        self.TimeCombo.addItems(DuringList)
+
+        self.StatusCombo = QComboBox(Form)
+        self.StatusCombo.setGeometry(QtCore.QRect(121, 280, 80, 30))
+        self.StatusCombo.addItems(['可借用','审批中','已借出'])
+
+        # 确认按钮
+        self.SearchBtn = QPushButton(Form)
+        self.SearchBtn.setText('搜索')
+        self.SearchBtn.setGeometry(QtCore.QRect(21, 320, 180, 30))
+        self.SearchBtn.clicked.connect(self.confirm_search)
+
+        # 教室搜索输入框
+        self.IDEdit = QLineEdit(Form)
+        self.IDEdit.setGeometry(QtCore.QRect(51, 370, 120, 30))
+        self.IDEdit.setText('如：教2-101')
+        # 教室搜索确认按钮
+        self.confirm_id = QPushButton(Form)
+        self.confirm_id.setGeometry(QtCore.QRect(51, 410, 120, 30))
+        self.confirm_id.setText('按照教室搜索')
+        self.confirm_id.clicked.connect(self.id_search)
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def show_log(self):
+        w = logUI()
+        w.exec()
+
+    def display_data(self):
+        self.additem()
 
     def show_time(self):
         datatime = QDateTime.currentDateTime()
@@ -196,56 +229,37 @@ class Admin(QWidget):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
-        self.IdLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt;\">ID</span></p></body></html>"))
-        self.StatusLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt;\">借用状态</span></p></body></html>"))
+        self.IdLab.setText('ID')
+        self.StatusLab.setText('status')
         self.TitleLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:26pt;\">教室多媒体钥匙管理系统管理端</span></p></body></html>"))
-        self.ClassroomLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt;\">按教室分类</span></p></body></html>"))
-        __sortingEnabled = self.ClassList.isSortingEnabled()
-        self.ClassList.setSortingEnabled(False)
-        item = self.ClassList.item(0)
-        item.setText(_translate("Form", "教一"))
-        item = self.ClassList.item(1)
-        item.setText(_translate("Form", "教二"))
-        item = self.ClassList.item(2)
-        item.setText(_translate("Form", "教三"))
-        item = self.ClassList.item(3)
-        item.setText(_translate("Form", "教四"))
-        self.ClassList.setSortingEnabled(__sortingEnabled)
-        self.TimeclssifyLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt;\">按时间分类</span></p></body></html>"))
-        __sortingEnabled = self.TimeList.isSortingEnabled()
-        self.TimeList.setSortingEnabled(False)
-        item = self.TimeList.item(0)
-        item.setText(_translate("Form", "周一"))
-        item = self.TimeList.item(1)
-        item.setText(_translate("Form", "周二"))
-        item = self.TimeList.item(2)
-        item.setText(_translate("Form", "周三"))
-        item = self.TimeList.item(3)
-        item.setText(_translate("Form", "周四"))
-        item = self.TimeList.item(4)
-        item.setText(_translate("Form", "周五"))
-        self.TimeList.setSortingEnabled(__sortingEnabled)
+
+        # 添加横向表头
         item = self.InfoTable.horizontalHeaderItem(0)
         item.setText(_translate("Form", "ID"))
         item = self.InfoTable.horizontalHeaderItem(1)
         item.setText(_translate("Form", "教室"))
         item = self.InfoTable.horizontalHeaderItem(2)
-        item.setText(_translate("Form", "可容纳人数"))
+        item.setText(_translate("Form", "时段"))
         item = self.InfoTable.horizontalHeaderItem(3)
-        item.setText(_translate("Form", "教室状态"))
-        # item = self.InfoTable.horizontalHeaderItem(4)
-        # item.setText(_translate("Form", "操作信息"))
+        item.setText(_translate("Form", "容纳人数"))
+        item = self.InfoTable.horizontalHeaderItem(4)
+        item.setText(_translate("Form", "借出状态"))
 
-        # self.TimeLab.setText(_translate("Form", f"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">{localtime}</span></p></body></html>"))
         self.IdEdit.setText(_translate("Form", f"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">{self.username}</span></p><p align=\"center\"><br/></p></body></html>"))
         self.StatusEdit.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">Admin</span></p></body></html>"))
 
+        self.InfoTable.setEditTriggers( QAbstractItemView.NoEditTriggers)
+
     def additem(self):
         # 添加教室信息
-        c = ClassRoom().ShowAll()
-        for i,x in enumerate(c):
+        StatusList = ['可借用','审批中','已借出']
+        # StatusList = ["<font color = 'green'>可借用</font></html>","<font color = 'yellow'>审批中</font>","<font color = 'red'>已借出</font>"]
+        self.c = ClassRoom().ShowAll()
+        self.InfoTable.setRowCount(0)
+        for i,x in enumerate(self.c):
             self.InfoTable.insertRow(i)
+            btn = QPushButton('预定')
+            btn.clicked.connect(lambda : self.click_btn(self.InfoTable.currentRow()))
 
             item = QTableWidgetItem(x['_id'])
             item.setTextAlignment(Qt.AlignCenter)
@@ -257,34 +271,172 @@ class Admin(QWidget):
 
             item = QTableWidgetItem(str(x['seats']))
             item.setTextAlignment(Qt.AlignCenter)
+            self.InfoTable.setItem(i, 3, QTableWidgetItem(item))
+
+            item = QTableWidgetItem(x['during'])
+            item.setTextAlignment(Qt.AlignCenter)
             self.InfoTable.setItem(i, 2, QTableWidgetItem(item))
 
-        # 设置不可更改
-        self.InfoTable.setEditTriggers( QAbstractItemView.NoEditTriggers)
+            item = QTableWidgetItem(str(StatusList[int(x['status'])]))
+            item.setTextAlignment(Qt.AlignCenter)
+            # 设置字体颜色
+            if int(x['status']) == 0:
+                item.setForeground(QBrush(QColor(0,255,0)))
+            elif int(x['status']) == 1:
+                item.setForeground(QBrush(QColor(255,215,0)))
+            elif int(x['status']) == 2:
+                item.setForeground(QBrush(QColor(255,0,0)))
+            self.InfoTable.setItem(i, 4, QTableWidgetItem(item))
 
     def AddInfo(self):
         # 添加
-        print(1)
-    
+        w = AddClassInfo()
+        w.exec()
+
     def DelInfo(self):
         # 删除
-        print(2)
+        w = DelClassInfo()
+        w.exec()
 
     def CorInfo(self):
         # 修改
-        print(3)
-
-    def FindInfo(self):
-        # 查询
-        print(4)
+        w = CorClassInfo()
+        w.exec()
 
     def ApprInfo(self):
         # 审批
-        print(5)
+        w = ApprInfo()
+        w.exec()
+        
+    def RefreshInfo(self):
+        #刷新 
+        # qApp.exit(10086)
+        # self.close() 
+        self.accept()
+
+    def quit_proc(self):
+        self.close()
+
+    def ReturnBack(self):
+        w = ReturnBack()
+        w.exec()
+    
+    def id_search(self):
+        name = self.IDEdit.text()
+        id = 'B'+name[1]+'R'+name[3:]
+        id_pat = 'B[2-4]R[0-9]{3}'
+        result = re.match(id_pat,id)
+        if result:
+            # c = ClassRoom(id).PullClassroom()
+            # print(c)
+            # QMessageBox.information(self, '查询错误', f'教室 {name} 不存在!')
+            self.InfoTable.clearContents()
+            self.c = ClassRoom().ShowAll()
+            # self.InfoTable.setRowCount(0)
+            StatusList = ['可借用','审批中','已借出']
+
+            count = 0
+
+            for i,x in enumerate(self.c):
+                if x['_id'][:6] == id:
+                    item = QTableWidgetItem(x['_id'])
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.InfoTable.setItem(count, 0, QTableWidgetItem(item))
+
+                    item = QTableWidgetItem(x['name'])
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.InfoTable.setItem(count, 1, QTableWidgetItem(item))
+
+                    item = QTableWidgetItem(str(x['seats']))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.InfoTable.setItem(count, 3, QTableWidgetItem(item))
+
+                    item = QTableWidgetItem(x['during'])
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.InfoTable.setItem(count, 2, QTableWidgetItem(item))
+
+                    item = QTableWidgetItem(str(StatusList[int(x['status'])]))
+
+                    if int(x['status']) == 0:
+                        item.setForeground(QBrush(QColor(0,255,0)))
+                    elif int(x['status']) == 1:
+                        item.setForeground(QBrush(QColor(255,215,0)))
+                    elif int(x['status']) == 2:
+                        item.setForeground(QBrush(QColor(255,0,0)))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.InfoTable.setItem(count, 4, QTableWidgetItem(item))
+
+                    count += 1
+            QMessageBox.information(self, '搜索结果', '查询完毕!')
+        else:
+            QMessageBox.information(self, '搜索结果', '请按照格式输入教室id')
+
+            
+
+    def confirm_search(self):
+        # 清空表格数据
+        self.InfoTable.clearContents()
+        self.c = ClassRoom().ShowAll()
+        # self.InfoTable.setRowCount(0)
+        # 获取筛选条件
+        buildingNum = self.BuldingCombo.currentText()
+        floorNum = self.FloorCombo.currentText()
+        timeNum = self.TimeCombo.currentText()
+        statusNum = self.StatusCombo.currentText()
+        # 加入新的信息
+        StatusList = ['可借用','审批中','已借出']
+        b = buildingNum[-1]
+        f = floorNum[0]
+        t = timeNum
+        s = StatusList.index(statusNum)
+        count = 0
+        for i,x in enumerate(self.c):
+            # print(b==x['_id'][1])
+            # print(f==x['_id'][3])
+            # print(t==x['during'])
+            if b == str(x['_id'][1]): # and (t == str(x['_id'][3])) and (t == str(x['during'])):
+                if f == str(x['_id'][3]):
+                    if t == str(x['during']):
+                        if s == x['status']:
+                            # self.InfoTable.insertRow(count)
+                            # btn = QPushButton('预定')
+                            # btn.clicked.connect(lambda : self.click_btn(self.InfoTable.currentRow()))
+
+                            item = QTableWidgetItem(x['_id'])
+                            item.setTextAlignment(Qt.AlignCenter)
+                            self.InfoTable.setItem(count, 0, QTableWidgetItem(item))
+
+                            item = QTableWidgetItem(x['name'])
+                            item.setTextAlignment(Qt.AlignCenter)
+                            self.InfoTable.setItem(count, 1, QTableWidgetItem(item))
+
+                            item = QTableWidgetItem(str(x['seats']))
+                            item.setTextAlignment(Qt.AlignCenter)
+                            self.InfoTable.setItem(count, 3, QTableWidgetItem(item))
+
+                            item = QTableWidgetItem(x['during'])
+                            item.setTextAlignment(Qt.AlignCenter)
+                            self.InfoTable.setItem(count, 2, QTableWidgetItem(item))
+
+                            item = QTableWidgetItem(str(StatusList[int(x['status'])]))
+                            item.setTextAlignment(Qt.AlignCenter)
+
+                            if int(x['status']) == 0:
+                                item.setForeground(QBrush(QColor(0,255,0)))
+                            elif int(x['status']) == 1:
+                                item.setForeground(QBrush(QColor(255,215,0)))
+                            elif int(x['status']) == 2:
+                                item.setForeground(QBrush(QColor(255,0,0)))
+                            self.InfoTable.setItem(count, 4, QTableWidgetItem(item))
+
+                            count += 1
+        # # else:
+        # #     QMessageBox.information(self, '搜索结果', '无查询结果!')
+        QMessageBox.information(self, '搜索结果', '查询完毕!')
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    w = Admin('hha')
+    w = AdminUI('A18011929')
     w.show()
-    app.exit(app.exec_())
+    sys.exit(app.exec_())

@@ -17,8 +17,11 @@ class LoginUI(QWidget):
         # icon.addPixmap(QPixmap('image\login.ico'))
 
         # 应用界面
+        # 设置登录状态选项
+        self.admin_status = 0
+        self.user_status = 0
         self.initUI()
-        
+        self.username = '' 
 
     def initUI(self):
         # 窗口大小
@@ -116,21 +119,27 @@ class LoginUI(QWidget):
                 user = User(username).PullUser()
                 userPassword = User(username).pwd
                 if password == userPassword and user:
+                    self.username = username
                     if username[0] == 'B':
                         # 如果以B开头则进入普通用户界面
+                        self.setVisible(False)
                         self.Student = Ui_Form(username)
-                        self.Student.show()
-                        self.close()
+                        a = self.Student.exec()
+                        if a:
+                            self.Login_Pushed()
                     else:
                         # 如果以A开头则进入管理员界面
+                        self.setVisible(False)
                         self.AdminUI = AdminUI(username)
-                        self.AdminUI.show()
-                        self.close()
+                        a = self.AdminUI.exec_()
+                        if a:
+                            self.Login_Pushed() 
+  
                 else:
                     QMessageBox.information(self, '密码错误', '密码错误，请重新输入') 
             else:
                 # 如果登陆失败，弹窗提示
-                QMessageBox.critical(self, "输入错误", "账号或密码错误，请重新输入")
+                QMessageBox.critical(self, "输入错误", "账号或密码格式错误，请重新输入")
 
     def Register_Pushed(self):
         self.setVisible(False)
@@ -149,7 +158,25 @@ if __name__ == '__main__':
     UI =  QApplication(sys.argv)
     w = LoginUI()
     w.show()
-    sys.exit(UI.exec())
+    UI.exec_()
 
-
+    # with open('cache.txt','r') as f:
+        # line = f.readline()
         
+    # username = line[:9]
+    # user_status = int(line[9])
+    # admin_status = int(line[-1])
+
+    # # 开启登录窗口
+    # if user_status is 1 and admin_status is 0:
+        # # 用户端
+        # UIS = QApplication(sys.argv)
+        # studentWin = Ui_Form(username)
+        # studentWin.show()
+        # UIS.exec_()
+    # elif user_status is 0 and admin_status is 1:
+        # # 管理端
+        # UIA = QApplication(sys.argv)
+        # adminWin = AdminUI(username)
+        # adminWin.show()
+        # UIA.exec_()
