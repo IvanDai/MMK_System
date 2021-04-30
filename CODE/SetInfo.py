@@ -24,6 +24,7 @@ class SetInfoWindow(QDialog,setinfo):
         # 显示窗口
         self.setupUi(self)
         # 设置主题
+        from SetTheme import Theme
         self.t = Theme(self)   # 创建主题，t.theme["Theme"]用于存储主题
         self.Handle_Buttons()
 
@@ -56,11 +57,11 @@ class SetInfoWindow(QDialog,setinfo):
             self.window = UserApp(self.usr_id)
             self.close()
             self.window.show()
-        # else:
-        #     from AdminApp import AdminApp
-        #     self.window = AdminApp(self.usr_id)
-        #     self.close()
-        #     self.window.show()
+        else:
+            from AdminApp import AdminApp
+            self.window = AdminApp(self.usr_id)
+            self.close()
+            self.window.show()
     
     def Save_Changes(self):
         if User().db_connect():

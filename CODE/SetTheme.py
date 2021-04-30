@@ -37,11 +37,11 @@ class SetThemeWindow(QDialog,settheme):
             self.window = UserApp(self.usr_id)
             self.close()
             self.window.show()
-        # else:
-        #     from AdminApp import AdminApp
-        #     self.window = AdminApp(self.usr_id)
-        #     self.close()
-        #     self.window.show()
+        else:
+            from AdminApp import AdminApp
+            self.window = AdminApp(self.usr_id)
+            self.close()
+            self.window.show()
     
     def Save_Changes(self):
         if self.t.theme["Theme"] == self.t_backup:

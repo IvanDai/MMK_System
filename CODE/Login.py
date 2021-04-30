@@ -20,6 +20,7 @@ class LogIn(QWidget , login):
         QWidget.__init__(self)
         self.setupUi(self)
         # 设置主题
+        from SetTheme import Theme
         Theme(self)
         self.Handle_Buttons()
     
@@ -44,20 +45,21 @@ class LogIn(QWidget , login):
             if current_user.PullUser():
                 if password == current_user.pwd:
                     # 登录到主界面
+                    from UserApp import UserApp
+                    from AdminApp import AdminApp
                     if not int(current_user.admin):
-                        from UserApp import UserApp
                         self.si_window = UserApp(current_user.id)
                         self.close()
                         time.sleep(0.5)
                         self.si_window.show()
-                    # else:
-                    #     self.si_window = AdminApp(current_user.id)
-                    #     self.close()
-                    #     self.si_window.show()
+                    else:
+                        self.si_window = AdminApp(current_user.id)
+                        self.close()
+                        self.si_window.show()
                     print('登陆成功')
                 else:
                     self.lineEdit_2.setText("")
-                    self.label_3.setText("密码错误，请重新输入！") # 窗口内部提示
+                    self.label_notice.setText("密码错误，请重新输入！") # 窗口内部提示
             else:
                 self.label_notice.setText("请确保账号已注册！")
         else:
@@ -68,6 +70,7 @@ class SignUp(QWidget ,signup):
     def __init__(self):
         QWidget.__init__(self)
         self.setupUi(self)
+        from SetTheme import Theme
         Theme(self)
         self.Handle_Buttons() 
     

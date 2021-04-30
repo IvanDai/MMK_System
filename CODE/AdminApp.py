@@ -15,9 +15,9 @@ from Login import *
 from SetTheme import *
 
 
-userapp,_   = loadUiType('../ui/MMKSystem.ui')
+adminapp,_   = loadUiType('../ui/MMKSystem_Admin.ui')
 
-class UserApp(QMainWindow,userapp):
+class AdminApp(QMainWindow,adminapp):
     quan_dict = {
         0:"",
         1:"第1-2节课",
@@ -36,6 +36,7 @@ class UserApp(QMainWindow,userapp):
         # 设置主题
         from SetTheme import Theme
         Theme(self)
+
         # 更新数据库
         Event().Update()
         self.Handle_Buttons()
@@ -48,14 +49,12 @@ class UserApp(QMainWindow,userapp):
         # 时间选择相关
         self.dateEdit.setDate(QDate.currentDate())
         self.dateEdit.setMinimumDate(QDate.currentDate())
-        print(QDateTime.currentDateTime())
+        print(QDateTime.currentDateTime() )
         # 表格初始化
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) # 填满
         self.tableWidget.setAlternatingRowColors(True) # 隔行变色
-
         # 查询键链接
         self.pushButton_2.clicked.connect(self.Check_Room)
-
         # 表格双击事件
         self.tableWidget.clicked.connect(self.Add_Lent)
         # 借用事件
@@ -67,6 +66,14 @@ class UserApp(QMainWindow,userapp):
         # 链接事件
         self.tableWidget_2.clicked.connect(self.Add_Event)
         self.pushButton_7.clicked.connect(self.Del_Event)
+
+        ############################  Tab3  ################################ 
+        # 表格初始化
+        self.tableWidget_3.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) # 填满
+        self.tableWidget_3.setAlternatingRowColors(True) # 隔行变色 
+        # 链接事件
+        self.tableWidget_3.clicked.connect(self.Add_Approve_Event)
+        self.pushButton_8.clicked.connect(self.Approve_Event)
 
         ############################  左下角  ################################
         # 个人信息修改
@@ -87,6 +94,8 @@ class UserApp(QMainWindow,userapp):
     def Tab_Change(self):
         if self.tabWidget.currentIndex()==1:
             self.Load_Self_Event()
+        elif self.tabWidget.currentIndex()==2:
+            self.Load_Approve_Event()
 
     #---------------------------#  Tab1相关  #---------------------------#
 
@@ -112,7 +121,6 @@ class UserApp(QMainWindow,userapp):
             QMessageBox.information(self,"警告",'查询时间已过期，请选择合法时间！',
                                         QMessageBox.Ok,QMessageBox.Ok) 
             return False
-        
         rooms = ClassRoom().AllClassroom()
         # 转化为表格
         index = []
@@ -237,6 +245,63 @@ class UserApp(QMainWindow,userapp):
         else:
             QMessageBox.information(self,'警告','未查询到记录')
 
+    #---------------------------#  Tab3相关  #---------------------------#
+    #=====查询待审批事件======#
+    def Load_Approve_Event(self):
+
+        # 清空窗体内容
+        for row in range(self.tableWidget_3.rowCount(),-1,-1):
+            self.tableWidget_3.removeRow(row)
+        QApplication.processEvents() # 刷新
+        # 填充相关
+        events = Event().Check_Approve_Event()
+        index = []
+        for event in events:
+            # 基本信息处理
+            room_id = event['RoomID']                     # ID
+            usr_id  = event['UserID']
+            date    = event['date']
+            quan    = self.quan_dict[int(event['quantuma'])]      # 时间段
+            reason  = event['reason']
+            # 整合信息
+            temp = [event['_id'],room_id,usr_id,date,quan,reason]
+            index.append(temp)
+        items = index
+        for i in range(len(items)):
+            item_row = items[i]
+            row = self.tableWidget_3.rowCount()
+            self.tableWidget_3.insertRow(row)
+            for j in range(len(item_row)):
+                item = QTableWidgetItem(str(items[i][j]))
+                self.tableWidget_3.setItem(row,j,item)
+
+    #=====   审批通过  ======#
+    def Add_Approve_Event(self,index):
+        row = index.row()
+        EventID  = self.tableWidget_3.item(row, 0).text()
+        room_ID  = self.tableWidget_3.item(row, 1).text()
+        usr_ID   = self.tableWidget_3.item(row, 2).text()
+        date     = self.tableWidget_3.item(row, 3).text() # 文字版时间段
+        quan     = self.tableWidget_3.item(row, 4).text()
+        reason   = self.tableWidget_3.item(row, 5).text()
+        
+        self.label_26.setText(EventID)
+        self.label_28.setText(room_ID)
+        self.label_24.setText(usr_ID) 
+        self.label_30.setText(date)
+        self.label_32.setText(quan)
+        self.label_36.setText(reason) 
+        return
+    
+    def Approve_Event(self):
+        A = QMessageBox.question(self,'确认','是否确认审核通过？',QMessageBox.Yes | QMessageBox.No)   #创建一个二次确认框
+        if A == QMessageBox.Yes:
+            Event().Approve_Event(self.label_26.text())
+        self.Load_Approve_Event()
+        return
+
+
+
     #---------------------------#   左上角   #---------------------------#
     def Show_Time(self):
         datetime = QDateTime.currentDateTime()
@@ -262,14 +327,14 @@ class UserApp(QMainWindow,userapp):
 
     def Change_Theme(self):
         from SetTheme import SetThemeWindow
-        self.window = SetThemeWindow(self.acc,0)
+        self.window = SetThemeWindow(self.acc,1)
         self.close()
         self.window.show()
         return
 
     def Set_Info(self):
         from SetInfo import SetInfoWindow
-        self.window = SetInfoWindow(self.acc,0)
+        self.window = SetInfoWindow(self.acc,1)
         self.close()
         self.window.show()
         return
@@ -295,7 +360,7 @@ class UserApp(QMainWindow,userapp):
 
 def main():
     app = QApplication(sys.argv)
-    window = UserApp("B18012005")
+    window = AdminApp("B18011936")
     window.show()
     app.exec_()
 

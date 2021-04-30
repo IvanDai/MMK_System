@@ -49,13 +49,21 @@ class Event():
         self.Pull_Event(id)
         self.status = 1
         self.Replace_Event()
-        # usr  = User(self.user_id)
-        # room = ClassRoom((self.room_id))
+
+        usr  = User(self.user_id)
+        usr.event.append(self.id)
+        from db_ClassRoom import ClassRoom
+        room = ClassRoom(self.room_id)
+        room.event.append(self.id)
+
+        usr.PushUser()
+        room.PushClassroom()
         return
 
     def Replace_Event(self):
+        myquery = {"_id" : self.id}
         mydict = self.TurnDict()
-        self.__mycol.insert_one(mydict) 
+        self.__mycol.update(myquery,mydict) 
 
     def Pull_Event(self,id):
         self.id = id
@@ -86,6 +94,13 @@ class Event():
         else:
             return False
 
+    def Check_Approve_Event(self):
+        cursor = self.__mycol.find({"status":0})
+        if cursor:
+            return cursor
+        else:
+            return False
+
     def Delete_Event(self,id):
         self.__mycol.delete_one({"_id":id})
         
@@ -99,16 +114,30 @@ class Event():
         self.__mycol.insert_one(event) 
 
     def Update(self):
+        from db_ClassRoom import ClassRoom
         # 判断日期是否已经过期
         date = str(datetime.date.today())
         events = self.__mycol.find({"date":{"$lt":date}}) 
         for event in events:
-            # temp = json.loads(event)
-            # print(event)
+            
             myquery = {"_id":event["_id"]}
+            if event["status"] == 1:
+                # 用户记录删除
+                usr = User(event["UserID"])
+                while event["_id"] in usr.event:
+                    usr.event.remove(event["_id"])
+                # 房间记录删除
+                room = ClassRoom(event["RoomID"])
+                while event["_id"] in room.event:
+                    room.event.remove(event["_id"])
+                # 更新记录
+                usr.PushUser()
+                room.PushClassroom()
+            # 更新事件状态
             newvalue  = { "$set": { "status": 2} }
             self.__mycol.update_one(myquery,newvalue)
         print("Events Update: Day Expined Updated, Waiting ...")
+
         # 判断当天是否已经过期
         d = datetime.datetime.now()
         time = d.hour * 100 + d.minute
@@ -125,10 +154,26 @@ class Event():
         else:
             quant = 10
         events = self.__mycol.find({"date":date})
+        # 更新数据
         for event in events:
             if event["quantuma"] < quant:
-                event["status"] = 2
-                self.Update_Event(event)
+                myquery = {"_id":event["_id"]}
+                # 对于已审批的数据  
+                if event["status"] == 1:
+                    # 用户记录删除
+                    usr = User(event["UserID"])
+                    while event["_id"] in usr.event:
+                        usr.event.remove(event["_id"])
+                    # 房间记录删除
+                    room = ClassRoom(event["RoomID"])
+                    while event["_id"] in room.event:
+                        room.event.remove(event["_id"])
+                    # 更新记录
+                    usr.PushUser()
+                    room.PushClassroom()
+                # 更新事件状态
+                newvalue  = { "$set": { "status": 2} }
+                self.__mycol.update_one(myquery,newvalue)
         print("Events All Updated Successful!")
         
 if __name__ == "__main__":

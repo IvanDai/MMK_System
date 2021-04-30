@@ -65,7 +65,7 @@ class ClassRoom:
         return mydict
 
     def PushClassroom(self):
-        mydict = User.TurnDict(self)
+        mydict = self.TurnDict()
         if self.__mycol.find_one({ "_id": self.id }):
             myquery = {"_id" : self.id}
             self.__mycol.update(myquery,mydict)
