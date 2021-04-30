@@ -40,7 +40,7 @@ class User:
         #connecting to a DB in mongoDB 
         try: 
             self.__myclient.admin.command("ping") 
-            print("Connection Successful!") 
+            # print("Connection Successful!") 
             return True 
         except: 
             print("Please check your connection") 
@@ -102,5 +102,9 @@ class User:
     
     # 注销账户 请谨慎运用此函数！！！！
     def Delete(self):
-        User.mycol.delete_one({"_id": self.id})
+        self.__mycol.delete_one({"_id": self.id})
         return "Deleted"
+
+    def Pull_All_User(self):
+        cursor = self.__mycol.find({})
+        return cursor

@@ -75,6 +75,19 @@ class AdminApp(QMainWindow,adminapp):
         self.tableWidget_3.clicked.connect(self.Add_Approve_Event)
         self.pushButton_8.clicked.connect(self.Approve_Event)
 
+        ############################  Tab4  ################################ 
+        # 表格初始化
+        self.tableWidget_4.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) # 填满
+        self.tableWidget_4.setAlternatingRowColors(True) # 隔行变色 
+        
+        # 链接事件
+        self.tableWidget_4.clicked.connect(self.Add_User_Info)
+        self.pushButton_11.clicked.connect(self.Save_User_Changes) # 保存更改
+        # 高级设置
+        self.pushButton_10.clicked.connect(self.Init_Pwd) # 密码初始化
+        self.pushButton_12.clicked.connect(self.Set_Admin) # 赋予管理员权限
+        self.pushButton_13.clicked.connect(self.Del_User) # 删除用户
+
         ############################  左下角  ################################
         # 个人信息修改
         self.pushButton_3.clicked.connect(self.Set_Info)
@@ -96,6 +109,8 @@ class AdminApp(QMainWindow,adminapp):
             self.Load_Self_Event()
         elif self.tabWidget.currentIndex()==2:
             self.Load_Approve_Event()
+        elif self.tabWidget.currentIndex()==3:
+            self.Load_User_Info()
 
     #---------------------------#  Tab1相关  #---------------------------#
 
@@ -300,6 +315,105 @@ class AdminApp(QMainWindow,adminapp):
         self.Load_Approve_Event()
         return
 
+
+    #---------------------------#  Tab4相关  #---------------------------#
+    
+    def Load_User_Info(self):
+        # 清空窗体内容
+        for row in range(self.tableWidget_4.rowCount(),-1,-1):
+            self.tableWidget_4.removeRow(row)
+        QApplication.processEvents() # 刷新
+        # 填充相关
+        users = User().Pull_All_User()
+        index = []
+        for user in users:
+            # 本人不可管理本人
+            if user['_id'] == self.acc:
+                pass
+            else:
+                # 基本信息处理
+                usr_id  = user['_id']                     # ID
+                name    = user['name']
+                if not user['admin']:
+                    admin = '普通用户'
+                else:
+                    admin = '管理员'
+                # 整合信息
+                temp = [usr_id,name,admin]
+                index.append(temp)
+        items = index
+        for i in range(len(items)):
+            item_row = items[i]
+            row = self.tableWidget_4.rowCount()
+            self.tableWidget_4.insertRow(row)
+            for j in range(len(item_row)):
+                item = QTableWidgetItem(str(items[i][j]))
+                self.tableWidget_4.setItem(row,j,item)
+
+    def Add_User_Info(self,index):
+        if User().db_connect():
+            row = index.row()
+            usr_ID   = self.tableWidget_4.item(row, 0).text()
+            admin    = self.tableWidget_4.item(row, 2).text()
+            user = User(usr_ID)
+            
+            self.label_41.setText(user.id)
+            self.label_44.setText(admin)
+            self.label_85.setText(user.pwd) 
+            self.lineEdit_3.setText(user.name)
+            self.lineEdit_4.setText(user.phone)
+            self.lineEdit_5.setText(user.email) 
+        return 
+
+    def Save_User_Changes(self):
+        if User().db_connect():
+            user = User(self.label_41.text())
+            user.name  = self.lineEdit_3.text()
+            user.phone = self.lineEdit_4.text()
+            user.email = self.lineEdit_5.text()
+            if user.phone and (not re.match("[0-9]{11}",user.phone)):
+                    QMessageBox.information(self,"警告",'手机号格式错误！请重新输入！',QMessageBox.Ok,QMessageBox.Ok)
+            # 邮箱格式不对（非必填）
+            elif user.email and (not re.match(r'^[0-9a-zA-Z_\.]+@[a-zA-Z0-9\.]+\.[a-zA-Z]{2,3}$',user.email)):
+                QMessageBox.information(self,"警告",'邮箱格式错误！请重新输入！',QMessageBox.Ok,QMessageBox.Ok)
+            else:
+                A = QMessageBox.question(self,'确认','是否确认保存设置？',QMessageBox.Yes | QMessageBox.No)   #创建一个二次确认框
+                if A == QMessageBox.Yes:
+                    user.PushUser()
+            self.Load_User_Info()
+    
+    # 高级设置
+    def Set_Admin(self):
+        if User().db_connect():
+            user = User(self.label_41.text())
+            user.admin = 1
+            A = QMessageBox.question(self,'警告','是否确认赋予管理员权限？',QMessageBox.Yes | QMessageBox.No)   #创建一个二次确认框
+            if A == QMessageBox.Yes:
+                B = QMessageBox.question(self,'警告','请再次确认是否赋予管理员权限？',QMessageBox.Yes | QMessageBox.No)
+                if B == QMessageBox.Yes: 
+                    user.PushUser()
+            self.label_44.setText("管理员")
+            self.Load_User_Info()
+    
+    def Init_Pwd(self):
+        if User().db_connect():
+            user = User(self.label_41.text())
+            user.pwd = 'Ab123456'
+            A = QMessageBox.question(self,'确认','是否确认重制密码？',QMessageBox.Yes | QMessageBox.No)   #创建一个二次确认框
+            if A == QMessageBox.Yes:
+                user.PushUser()
+            self.label_85.setText("Ab123456")
+            self.Load_User_Info()
+
+    def Del_User(self):
+        if User().db_connect():
+            user = User(self.label_41.text())
+            A = QMessageBox.question(self,'警告','是否确认删除用户？一旦删除将无法恢复？',QMessageBox.Yes | QMessageBox.No)   #创建一个二次确认框
+            if A == QMessageBox.Yes:
+                B = QMessageBox.question(self,'警告','请再次确认是否删除用户？',QMessageBox.Yes | QMessageBox.No)
+                if B == QMessageBox.Yes: 
+                    user.Delete()
+            self.Load_User_Info()
 
 
     #---------------------------#   左上角   #---------------------------#
