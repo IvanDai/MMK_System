@@ -49,30 +49,58 @@ class Ui_Form(QDialog):
         Icon = QIcon(iconpath)
         self.setWindowIcon(Icon)
 
+
+        # 校徽显示
+        pix = QPixmap('image/school.jpg')
+        self.lab = QLabel(Form)
+        # self.lab.setStyleSheet("border: 2px solid red")
+        self.lab.setGeometry(QtCore.QRect(20, 10, 280, 90))
+        self.lab.setPixmap(pix)
+        self.lab.setScaledContents(True)
+
+        # 头像显示
+        pix = QPixmap('image/login.ico')
+        self.lab1 = QLabel(Form)
+        self.lab1.setStyleSheet("border: 2px solid red")
+        self.lab1.setPixmap(pix)
+        self.lab1.setScaledContents(True)
+        self.lab1.setGeometry(QtCore.QRect(20, 110, 83, 83))
+
+        # 背景白色
+        palette = QPalette()
+        palette.setColor(QPalette.Background, Qt.white)
+        self.setPalette(palette)
+
+
         self.zxAccBtn = QPushButton(Form)
         self.zxAccBtn.setGeometry(QtCore.QRect(865, 110, 80, 30))
         self.zxAccBtn.setText('个人已借')
+        self.zxAccBtn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
         self.zxAccBtn.clicked.connect(self.info)
 
         self.ShowAll= QPushButton(Form)
         self.ShowAll.setGeometry(QtCore.QRect(865, 150, 80, 30))
         self.ShowAll.setText('全部数据')
+        self.ShowAll.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
         self.ShowAll.clicked.connect(self.all_data)
         
         self.Refresh_btn= QPushButton(Form)
         self.Refresh_btn.setGeometry(QtCore.QRect(865, 190, 80, 30))
         self.Refresh_btn.setText('刷新')
+        self.Refresh_btn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
         self.Refresh_btn.clicked.connect(self.refresh)
 
 
         self.IdLab = QtWidgets.QLabel(self)
         self.IdLab.setGeometry(QtCore.QRect(20, 120, 71, 21))
         self.IdLab.setObjectName("IdLab")
-        self.StatusLab = QtWidgets.QLabel(self)
-        self.StatusLab.setGeometry(QtCore.QRect(20, 160, 71, 21))
-        self.StatusLab.setObjectName("StatusLab")
+
+        # self.StatusLab = QtWidgets.QLabel(self)
+        # self.StatusLab.setGeometry(QtCore.QRect(20, 160, 71, 21))
+        # self.StatusLab.setObjectName("StatusLab")
+
         self.TitleLab = QtWidgets.QLabel(self)
-        self.TitleLab.setGeometry(QtCore.QRect(150, 20, 541, 41))
+        self.TitleLab.setGeometry(QtCore.QRect(290, 40, 541, 41))
         self.TitleLab.setObjectName("TitleLab")
 
 
@@ -122,14 +150,20 @@ class Ui_Form(QDialog):
         self.line_5.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_5.setObjectName("line_5")
-
+        self.line_6 = QFrame(Form)
+        self.line_6.setGeometry(QtCore.QRect(20, 345, 185, 20))
+        self.line_6.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_6.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_6.setObjectName('line_6')
 
         self.TimeLab = QtWidgets.QLabel(Form)
-        self.TimeLab.setGeometry(QtCore.QRect(310, 70, 261, 31))
+        self.TimeLab.setGeometry(QtCore.QRect(710, 80, 261, 31))
         self.TimeLab.setObjectName("TimeLab")
+
         self.IdEdit = QtWidgets.QLabel(Form)
         self.IdEdit.setGeometry(QtCore.QRect(110, 120, 91, 20))
         self.IdEdit.setObjectName("IdEdit")
+
         self.StatusEdit = QtWidgets.QLabel(Form)
         self.StatusEdit.setGeometry(QtCore.QRect(110, 160, 91, 20))
         self.StatusEdit.setObjectName("StatusEdit")
@@ -150,11 +184,11 @@ class Ui_Form(QDialog):
     def show_time(self):
         datatime = QDateTime.currentDateTime()
         localtime = datatime.toString()
-        self.TimeLab.setText(f"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">{localtime}</span></p></body></html>")
+        self.TimeLab.setText(f"<html><head/><body><p align=\"center\"><span style=\" font-size:10pt;\">{localtime}</span></p></body></html>")
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        self.StatusLab.setText('status')
+        # self.StatusLab.setText('status')
         self.TitleLab.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:26pt;\">教室多媒体钥匙管理系统学生端</span></p></body></html>"))
         # 左侧查找布局        
         DuringList = ['8:00~9:35',
@@ -167,25 +201,30 @@ class Ui_Form(QDialog):
 
         # 教学楼选择
         self.BuldingCombo = QComboBox(self)
-        self.BuldingCombo.setGeometry(QtCore.QRect(21, 230, 80, 30))
+        self.BuldingCombo.setGeometry(QtCore.QRect(36, 210, 60, 30))
+        self.BuldingCombo.setStyleSheet("QComboBox{background:white}")
         self.BuldingCombo.addItems(['教2','教3','教4'])
         # 楼层选择
         self.FloorCombo = QComboBox(self)
-        self.FloorCombo.setGeometry(QtCore.QRect(121, 230, 80, 30))
+        self.FloorCombo.setStyleSheet("QComboBox{background:white}")
+        self.FloorCombo.setGeometry(QtCore.QRect(141, 210, 60, 30))
         self.FloorCombo.addItems(['1楼','2楼','3楼','4楼'])
         # 时段选择
         self.TimeCombo = QComboBox(self)
-        self.TimeCombo.setGeometry(QtCore.QRect(21, 280, 80, 30))
+        self.TimeCombo.setGeometry(QtCore.QRect(21, 260, 90, 30))
+        self.TimeCombo.setStyleSheet("QComboBox{background:white}")
         self.TimeCombo.addItems(DuringList)
 
         self.StatusCombo = QComboBox(self)
-        self.StatusCombo.setGeometry(QtCore.QRect(121, 280, 80, 30))
+        self.StatusCombo.setGeometry(QtCore.QRect(141, 260, 60, 30))
+        self.StatusCombo.setStyleSheet("QComboBox{background:white}")
         self.StatusCombo.addItems(['可借用','审批中','已借出'])
 
         # 确认按钮
         self.SearchBtn = QPushButton(self)
         self.SearchBtn.setText('搜索')
-        self.SearchBtn.setGeometry(QtCore.QRect(21, 320, 180, 30))
+        self.SearchBtn.setGeometry(QtCore.QRect(51, 310, 120, 30))
+        self.SearchBtn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
         self.SearchBtn.clicked.connect(self.confirm_search)
 
         # self.retranslateUi(Form)
@@ -213,11 +252,12 @@ class Ui_Form(QDialog):
         self.confirm_id = QPushButton(Form)
         self.confirm_id.setGeometry(QtCore.QRect(51, 410, 120, 30))
         self.confirm_id.setText('按照教室搜索')
+        self.confirm_id.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
         self.confirm_id.clicked.connect(self.id_search)
         
         # self.TimeLab.setText(_translate("Form", f"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">{localtime}</span></p></body></html>"))
         self.IdEdit.setText(_translate("Form", f"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">{self.username}</span></p><p align=\"center\"><br/></p></body></html>"))
-        self.StatusEdit.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">status</span></p></body></html>"))
+        self.StatusEdit.setText(_translate("Form", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">学生</span></p></body></html>"))
 
 
     def confirm_search(self):
@@ -248,6 +288,7 @@ class Ui_Form(QDialog):
                             # print(f'adding {i}')
                             self.InfoTable.insertRow(count)
                             btn = QPushButton('预定')
+                            btn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
                             btn.clicked.connect(lambda : self.click_btn(self.InfoTable.currentRow()))
 
                             item = QTableWidgetItem(x['_id'])
@@ -306,6 +347,7 @@ class Ui_Form(QDialog):
             for i,x in enumerate(self.c):
                 if x['_id'][:6] == id:
                     btn = QPushButton('预定')
+                    btn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
                     btn.clicked.connect(lambda : self.click_btn(self.InfoTable.currentRow()))
 
                     item = QTableWidgetItem(x['_id'])
@@ -355,6 +397,7 @@ class Ui_Form(QDialog):
         for i,x in enumerate(self.c):
             self.InfoTable.insertRow(i)
             btn = QPushButton('预定')
+            btn.setStyleSheet('background-color: rgb(255, 255, 255);border-radius: 10px; border: 2px groove gray;border-style: outset;')
             btn.clicked.connect(lambda : self.click_btn(self.InfoTable.currentRow()))
 
             item = QTableWidgetItem(x['_id'])
